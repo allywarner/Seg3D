@@ -53,19 +53,11 @@ SingleTargetTool( Core::VolumeType::DATA_E, toolid )
   // Need to set ranges and default values for all parameters
   this->add_state( "replace", this->replace_state_, false );
     
-  // Whether we use a mask to find which components to use
-  this->add_state( "mask", this->mask_state_, Tool::NONE_OPTION_C, empty_list );
-  this->add_extra_layer_input( this->mask_state_, Core::VolumeType::MASK_E, true );
-    
-  // Whether that mask should be inverted
-  this->add_state( "invert_mask", this->mask_invert_state_, false );
-    
   // What the outside should be filled in with
   this->add_state( "replace_with", this->replace_with_state_, "zero",
                     "max_value|min_value|new_max_value|new_min_value|zero" );
     
   //this->add_state( "preserve_data_format", this->preserve_data_format_state_, true );
-  //this->add_state( "radius", this->radius_state_, 2, 1, 10, 1 );
 }
 
 MRIBiasFieldCorrectionFilter::~MRIBiasFieldCorrectionFilter()
@@ -80,13 +72,10 @@ void MRIBiasFieldCorrectionFilter::execute( Core::ActionContextHandle context )
   
   ActionMRIBiasFieldCorrectionFilter::Dispatch( context,
                                          this->target_layer_state_->get(),
-                                         this->mask_state_->get(),
                                          this->replace_state_->get(),
-                                         this->mask_invert_state_->get(),
                                          this->replace_with_state_->get()
                                    );
                                          //this->preserve_data_format_state_->get(),
-                                         //this->radius_state_->get() );
 }
   
 } // end namespace Seg3D

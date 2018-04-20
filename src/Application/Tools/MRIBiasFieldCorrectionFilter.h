@@ -57,21 +57,12 @@ private:
 public:
   // Whether the layer needs to be replaced
   Core::StateBoolHandle replace_state_;
-  
-  /// Layerid of the mask layer
-  Core::StateLabeledOptionHandle mask_state_;
-    
-  /// Whether mask should be inverted in this filter
-  Core::StateBoolHandle mask_invert_state_;
     
   /// What the outside of the mask should be replaced with
   Core::StateOptionHandle replace_with_state_;
     
   // Whether the data format needs to be preserved in the filter
   //Core::StateBoolHandle preserve_data_format_state_;
-  
-  // Radius
-  //Core::StateRangedIntHandle radius_state_;
   
   // -- execute --
 public:

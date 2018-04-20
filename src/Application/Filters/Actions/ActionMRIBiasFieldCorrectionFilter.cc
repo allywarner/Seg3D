@@ -56,26 +56,7 @@ bool ActionMRIBiasFieldCorrectionFilter::validate( Core::ActionContextHandle& co
   // Check for layer availability 
   if ( ! LayerManager::CheckLayerAvailability( this->target_layer_, 
                                               this->replace_, context, this->sandbox_ ) ) return false;
-    
-  // Check for layer existence and type information mask layer
-  if ( ! LayerManager::CheckLayerExistenceAndType( this->mask_layer_,
-                                                    Core::VolumeType::MASK_E, context, this->sandbox_ ) ) return false;
-    
-  // Check whether mask and data have the same size
-  if ( ! LayerManager::CheckLayerSize( this->mask_layer_, this->target_layer_,
-                                        context, this->sandbox_ ) ) return false;
-    
-  // Check for layer availability mask layer
-  if ( ! LayerManager::CheckLayerAvailability( this->mask_layer_,
-                                                this->replace_, context, this->sandbox_ ) ) return false;
-  
-  // If the number of iterations is lower than one, we cannot run the filter
-  //if( this->radius_ < 0.0 )
-  //{
-    //context->report_error( "The radius needs to be larger than zero." );
-    //return false;
-  //}
-  
+ 
   // Validation successful
   return true;
 }
@@ -90,13 +71,10 @@ class MRIBiasFieldCorrectionFilterAlgo : public ITKFilter
   
 public:
   LayerHandle src_layer_;
-  LayerHandle mask_layer_;
   LayerHandle dst_layer_;
   
-  bool invert_mask_;
   std::string replace_with_;
   //bool preserve_data_format_;
-  //int radius_;
   
 public:
   // RUN:
@@ -128,10 +106,6 @@ public:
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
-    
-		//typename filter_type::InputSizeType size;
-		//size.Fill( this->radius_ );
-		//filter->SetRadius( size );
     
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
@@ -198,7 +172,6 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   
   // Copy the parameters over to the algorithm that runs the filter
   algo->set_sandbox( this->sandbox_ );
-  algo->invert_mask_ = this->invert_mask_;
   algo->replace_with_ = this->replace_with_;
   //algo->preserve_data_format_ = this->preserve_data_format_;
   //algo->radius_ = this->radius_;
@@ -246,19 +219,16 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
 
 
 void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle context,
-                                                  std::string target_layer, std::string mask_layer, bool replace, bool invert_mask, std::string replace_with ) //, double radius )
+                                                  std::string target_layer, bool replace, std::string replace_with )
 {	
   // Create a new action
   ActionMRIBiasFieldCorrectionFilter* action = new ActionMRIBiasFieldCorrectionFilter;
   
   // Setup the parameters
   action->target_layer_ = target_layer;
-  action->mask_layer_ = mask_layer;
   action->replace_ = replace;
-  action->invert_mask_ = invert_mask;
   action->replace_with_ = replace_with;
   //action->preserve_data_format_ = preserve_data_format;
-  //action->radius_ = radius;
   
   // Dispatch action to underlying engine
   Core::ActionDispatcher::PostAction( Core::ActionHandle( action ), context );

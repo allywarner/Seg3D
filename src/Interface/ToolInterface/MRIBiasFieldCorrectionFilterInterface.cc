@@ -80,19 +80,12 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
                              tool->use_active_layer_state_ );
   QtUtils::QtBridge::Connect( this->private_->ui_.replaceCheckBox, 
                              tool->replace_state_ );
-  QtUtils::QtBridge::Connect( this->private_->ui_.mask_,
-                             tool->mask_state_ );
-  QtUtils::QtBridge::Connect( this->private_->ui_.invert_mask_,
-                             tool->mask_invert_state_ );
   QtUtils::QtBridge::Connect( this->private_->ui_.replace_with_,
                              tool->replace_with_state_ );
     
   //QtUtils::QtBridge::Connect( this->private_->ui_.preserve_data_format_,
                              //tool->preserve_data_format_state_ );
-  
-  //QtUtils::QtBridge::Connect( this->private_->ui_.radius_,
-                             //tool->radius_state_ );
-  
+
   QtUtils::QtBridge::Enable( this->private_->ui_.runFilterButton,
                             tool->valid_target_state_ );
   
@@ -100,11 +93,9 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
   
   QtUtils::QtBridge::Enable( this->private_->ui_.target_layer_, 
                             tool->use_active_layer_state_, true );
-  QtUtils::QtBridge::Connect( this->private_->ui_.runFilterButton, boost::bind(
-                                                                               &Tool::execute, tool, Core::Interface::GetWidgetActionContext() ) );
-  
-  //this->private_->ui_.radius_->set_description( "Radius" );
-  
+  QtUtils::QtBridge::Connect( this->private_->ui_.runFilterButton, boost::bind(&Tool::execute, tool,
+	  Core::Interface::GetWidgetActionContext() ) );
+
   return true;
 } // end build_widget
   
