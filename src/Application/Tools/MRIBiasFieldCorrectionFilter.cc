@@ -50,14 +50,13 @@ SingleTargetTool( Core::VolumeType::DATA_E, toolid )
 {
   // Create an empty list of label options
   std::vector< LayerIDNamePair > empty_list( 1, std::make_pair( Tool::NONE_OPTION_C, Tool::NONE_OPTION_C ) );
+
   // Need to set ranges and default values for all parameters
   this->add_state( "replace", this->replace_state_, false );
     
   // What the outside should be filled in with
   this->add_state( "replace_with", this->replace_with_state_, "zero",
                     "max_value|min_value|new_max_value|new_min_value|zero" );
-    
-  //this->add_state( "preserve_data_format", this->preserve_data_format_state_, true );
 }
 
 MRIBiasFieldCorrectionFilter::~MRIBiasFieldCorrectionFilter()
@@ -75,7 +74,6 @@ void MRIBiasFieldCorrectionFilter::execute( Core::ActionContextHandle context )
                                          this->replace_state_->get(),
                                          this->replace_with_state_->get()
                                    );
-                                         //this->preserve_data_format_state_->get(),
 }
   
 } // end namespace Seg3D

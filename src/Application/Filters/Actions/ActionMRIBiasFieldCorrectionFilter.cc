@@ -56,7 +56,7 @@ bool ActionMRIBiasFieldCorrectionFilter::validate( Core::ActionContextHandle& co
   // Check for layer availability 
   if ( ! LayerManager::CheckLayerAvailability( this->target_layer_, 
                                               this->replace_, context, this->sandbox_ ) ) return false;
- 
+
   // Validation successful
   return true;
 }
@@ -74,7 +74,6 @@ public:
   LayerHandle dst_layer_;
   
   std::string replace_with_;
-  //bool preserve_data_format_;
   
 public:
   // RUN:
@@ -94,7 +93,9 @@ public:
     typename Core::ITKImageDataT<VALUE_TYPE>::Handle input_image; 
     this->get_itk_image_from_layer<VALUE_TYPE>( this->src_layer_, input_image );
 
-	//typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
+	typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
+	//make mask image some threshold on input image and make it binary
+	
 	//this->get_itk_image_from_mask_layer<VALUE_TYPE>(this->mask_layer_, mask_image);
     
     // Create a new ITK filter instantiation.	
@@ -109,6 +110,7 @@ public:
     
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
+
     
     // Run the actual ITK filter.
     // This needs to be in a try/catch statement as certain filters throw exceptions when they
@@ -131,19 +133,9 @@ public:
     // As ITK filters generate an inconsistent abort behavior, we record our own abort flag
     // This one is set when the abort button is pressed and an abort is sent to ITK.
     if ( this->check_abort() ) return;
-    
-    // If we want to preserve the data type we convert the data before inserting it back.
-    // NOTE: Conversion is done on the filter thread and insertion is done on the application
-    // thread.
-//    if ( this->preserve_data_format_ )
-//    {
-//      this->convert_and_insert_itk_image_into_layer( this->dst_layer_, 
-//                                                    filter->GetOutput(), this->src_layer_->get_data_type() );				
-//    }
-//    else
-//    {
-//      this->insert_itk_image_into_layer( this->dst_layer_, filter->GetOutput() );	
-//    }
+
+	filter->GetOutput();
+
   }
   SCI_END_TYPED_ITK_RUN()
   
@@ -163,7 +155,6 @@ public:
   }
 };
 
-
 bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context,
                                        Core::ActionResultHandle& result )
 {
@@ -173,8 +164,6 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   // Copy the parameters over to the algorithm that runs the filter
   algo->set_sandbox( this->sandbox_ );
   algo->replace_with_ = this->replace_with_;
-  //algo->preserve_data_format_ = this->preserve_data_format_;
-  //algo->radius_ = this->radius_;
   
   // Find the handle to the layer
   if ( !( algo->find_layer( this->target_layer_, algo->src_layer_ ) ) )
@@ -200,6 +189,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   
   // Return the id of the destination layer.
   result = Core::ActionResultHandle( new Core::ActionResult( algo->dst_layer_->get_layer_id() ) );
+
   // If the action is run from a script (provenance is a special case of script),
   // return a notifier that the script engine can wait on.
   if ( context->source() == Core::ActionSource::SCRIPT_E ||
@@ -217,9 +207,9 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   return true;
 }
 
-
 void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle context,
-                                                  std::string target_layer, bool replace, std::string replace_with )
+                                                  std::string target_layer, bool replace, 
+												  std::string replace_with )
 {	
   // Create a new action
   ActionMRIBiasFieldCorrectionFilter* action = new ActionMRIBiasFieldCorrectionFilter;
@@ -228,7 +218,6 @@ void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle con
   action->target_layer_ = target_layer;
   action->replace_ = replace;
   action->replace_with_ = replace_with;
-  //action->preserve_data_format_ = preserve_data_format;
   
   // Dispatch action to underlying engine
   Core::ActionDispatcher::PostAction( Core::ActionHandle( action ), context );

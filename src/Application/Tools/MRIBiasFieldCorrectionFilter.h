@@ -60,15 +60,11 @@ public:
     
   /// What the outside of the mask should be replaced with
   Core::StateOptionHandle replace_with_state_;
-    
-  // Whether the data format needs to be preserved in the filter
-  //Core::StateBoolHandle preserve_data_format_state_;
-  
+   
   // -- execute --
 public:
   // Execute the tool and dispatch the action
   virtual void execute( Core::ActionContextHandle context );
-  
 };
   
 } // end namespace

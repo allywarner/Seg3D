@@ -56,7 +56,6 @@ public:
   // -- filter internals --
 private:
   boost::shared_ptr< MRIBiasFieldCorrectionFilterInterfacePrivate > private_;
-  
 };
   
 } // end namespace Seg3D
