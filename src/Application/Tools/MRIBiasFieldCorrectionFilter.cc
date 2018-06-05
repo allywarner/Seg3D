@@ -53,10 +53,6 @@ SingleTargetTool( Core::VolumeType::DATA_E, toolid )
 
   // Need to set ranges and default values for all parameters
   this->add_state( "replace", this->replace_state_, false );
-    
-  // What the outside should be filled in with
-  this->add_state( "replace_with", this->replace_with_state_, "zero",
-                    "max_value|min_value|new_max_value|new_min_value|zero" );
 }
 
 MRIBiasFieldCorrectionFilter::~MRIBiasFieldCorrectionFilter()
@@ -71,9 +67,7 @@ void MRIBiasFieldCorrectionFilter::execute( Core::ActionContextHandle context )
   
   ActionMRIBiasFieldCorrectionFilter::Dispatch( context,
                                          this->target_layer_state_->get(),
-                                         this->replace_state_->get(),
-                                         this->replace_with_state_->get()
-                                   );
+                                         this->replace_state_->get() );
 }
   
 } // end namespace Seg3D

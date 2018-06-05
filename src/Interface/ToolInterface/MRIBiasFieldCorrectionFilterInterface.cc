@@ -67,8 +67,6 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
 {
   //Step 1 - build the Qt GUI Widget
   this->private_->ui_.setupUi( frame );
-  this->private_->ui_.horizontalLayout_2->setAlignment( Qt::AlignHCenter );
-  this->private_->ui_.horizontalLayout_3->setAlignment( Qt::AlignHCenter );
   
   //Step 2 - get a pointer to the tool
  MRIBiasFieldCorrectionFilter* tool = dynamic_cast< MRIBiasFieldCorrectionFilter* > ( this->tool().get() );
@@ -80,8 +78,6 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
                              tool->use_active_layer_state_ );
   QtUtils::QtBridge::Connect( this->private_->ui_.replaceCheckBox, 
                              tool->replace_state_ );
-  QtUtils::QtBridge::Connect( this->private_->ui_.replace_with_,
-                             tool->replace_with_state_ );
   QtUtils::QtBridge::Enable( this->private_->ui_.runFilterButton, 
 							tool->valid_target_state_ );
   QtUtils::QtBridge::Show( this->private_->ui_.message_alert_, 

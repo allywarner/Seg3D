@@ -70,14 +70,13 @@ private:
   
   std::string target_layer_;
   bool replace_;
-  std::string replace_with_;
   SandboxID sandbox_;
   
   // -- Dispatch this action from the interface --
 public:
   // DISPATCH:
   // Create and dispatch action that inserts the new layer 
-    static void Dispatch( Core::ActionContextHandle context, std::string target_layer, bool replace, std::string replace_with);
+    static void Dispatch( Core::ActionContextHandle context, std::string target_layer, bool replace);
 };
 	
 } // end namespace Seg3D

@@ -74,8 +74,6 @@ namespace Seg3D
 		LayerHandle src_layer_;
 		LayerHandle dst_layer_;
 
-		std::string replace_with_;
-
 	public:
 		// RUN:
 		// Implemtation of run of the Runnable base class, this function is called when the thread
@@ -95,7 +93,7 @@ namespace Seg3D
 			this->get_itk_image_from_layer<VALUE_TYPE>(this->src_layer_, input_image);
 			auto imageData = input_image->get_image();
 
-			threshold_data(imageData, double 2, double 255);
+			//threshold_data(imageData, double 2, double 255);
 
 			//Make mask image some threshold on input image and make it binary
 			typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
@@ -183,7 +181,6 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   
   // Copy the parameters over to the algorithm that runs the filter
   algo->set_sandbox( this->sandbox_ );
-  algo->replace_with_ = this->replace_with_;
   
   // Find the handle to the layer
   if ( !( algo->find_layer( this->target_layer_, algo->src_layer_ ) ) )
@@ -228,8 +225,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
 }
 
 void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle context,
-                                                  std::string target_layer, bool replace, 
-												  std::string replace_with )
+                                                  std::string target_layer, bool replace )
 {	
   // Create a new action
   ActionMRIBiasFieldCorrectionFilter* action = new ActionMRIBiasFieldCorrectionFilter;
@@ -237,7 +233,6 @@ void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle con
   // Setup the parameters
   action->target_layer_ = target_layer;
   action->replace_ = replace;
-  action->replace_with_ = replace_with;
   
   // Dispatch action to underlying engine
   Core::ActionDispatcher::PostAction( Core::ActionHandle( action ), context );

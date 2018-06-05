@@ -57,9 +57,6 @@ private:
 public:
   // Whether the layer needs to be replaced
   Core::StateBoolHandle replace_state_;
-    
-  /// What the outside of the mask should be replaced with
-  Core::StateOptionHandle replace_with_state_;
    
   // -- execute --
 public:
