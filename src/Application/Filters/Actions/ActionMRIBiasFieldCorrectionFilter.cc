@@ -93,10 +93,22 @@ namespace Seg3D
 			this->get_itk_image_from_layer<VALUE_TYPE>(this->src_layer_, input_image);
 			auto imageData = input_image->get_image();
 
-			//threshold_data(imageData, double 2, double 255);
-
 			//Make mask image some threshold on input image and make it binary
 			typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
+
+			auto totalSize = input_image->get_nx()*input_image->get_ny()*input_image->get_nz();
+			std::vector<float> values;
+			double min_val = 2.0;
+			double max_val = 255.0;
+			for (size_t i = 0; i < totalSize; i++)
+			{
+				auto temp_pix = imageData->GetPixel(i);
+				values.push_back(temp_pix);
+				//dst_data[i] = (src_data[i] >= min_val &&
+					//src_data[index] <= max_val) ? 1 : 0;
+			}
+
+
 			for (int i = 0; i < input_image->get_nx(); i++)
 			{
 				for (int j = 0; j < input_image->get_ny(); j++)
