@@ -5,18 +5,18 @@
  
  Copyright (c) 2018 Scientific Computing and Imaging Institute,
  University of Utah.
- 
- 
+
+
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,71 +33,90 @@
 #include <Application/Layer/LayerManager.h>
 #include <Application/StatusBar/StatusBar.h>
 #include <Application/Filters/ITKFilter.h>
+#include <Application/Filters/ThresholdFilter.h>
 #include <Application/Filters/Actions/ActionMRIBiasFieldCorrectionFilter.h>
 
 // REGISTER ACTION:
 // Define a function that registers the action. The action also needs to be
 // registered in the CMake file.
 // NOTE: Registration needs to be done outside of any namespace
-CORE_REGISTER_ACTION( Seg3D, MRIBiasFieldCorrectionFilter )
+CORE_REGISTER_ACTION(Seg3D, MRIBiasFieldCorrectionFilter)
 
 namespace Seg3D
 {
 
-bool ActionMRIBiasFieldCorrectionFilter::validate( Core::ActionContextHandle& context )
-{
-  // Make sure that the sandbox exists
-  if ( !LayerManager::CheckSandboxExistence( this->sandbox_, context ) ) return false;
-  
-  // Check for layer existence and type information
-  if ( ! LayerManager::CheckLayerExistenceAndType( this->target_layer_, 
-                                                  Core::VolumeType::DATA_E, context, this->sandbox_ ) ) return false;
-  
-  // Check for layer availability 
-  if ( ! LayerManager::CheckLayerAvailability( this->target_layer_, 
-                                              this->replace_, context, this->sandbox_ ) ) return false;
+	bool ActionMRIBiasFieldCorrectionFilter::validate(Core::ActionContextHandle& context)
+	{
+		// Make sure that the sandbox exists
+		if (!LayerManager::CheckSandboxExistence(this->sandbox_, context)) return false;
 
-  // Validation successful
-  return true;
-}
+		// Check for layer existence and type information
+		if (!LayerManager::CheckLayerExistenceAndType(this->target_layer_,
+			Core::VolumeType::DATA_E, context, this->sandbox_)) return false;
 
-// ALGORITHM CLASS
-// This class does the actual work and is run on a separate thread.
-// NOTE: The separation of the algorithm into a private class is for the purpose of running the
-// filter on a separate thread.
+		// Check for layer availability 
+		if (!LayerManager::CheckLayerAvailability(this->target_layer_,
+			this->replace_, context, this->sandbox_)) return false;
 
-class MRIBiasFieldCorrectionFilterAlgo : public ITKFilter
-{
-  
-public:
-  LayerHandle src_layer_;
-  LayerHandle dst_layer_;
-  
-  std::string replace_with_;
-  
-public:
-  // RUN:
-  // Implemtation of run of the Runnable base class, this function is called when the thread
-  // is launched.
-  
-  // NOTE: The macro needs a data type to select which version to run. This needs to be
-  // a member variable of the algorithm class.
-  SCI_BEGIN_TYPED_ITK_RUN( this->src_layer_->get_data_type() )
-  {
-    // Define the type of filter that we use.
-    typedef itk::MRIBiasFieldCorrectionFilter<
-    TYPED_IMAGE_TYPE, FLOAT_IMAGE_TYPE, UCHAR_IMAGE_TYPE > filter_type;
-    
-    // Retrieve the image as an itk image from the underlying data structure
-    // NOTE: This only does wrapping and does not regenerate the data.
-    typename Core::ITKImageDataT<VALUE_TYPE>::Handle input_image; 
-    this->get_itk_image_from_layer<VALUE_TYPE>( this->src_layer_, input_image );
+		// Validation successful
+		return true;
+	}
 
-	typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
-	//make mask image some threshold on input image and make it binary
-	
-	//this->get_itk_image_from_mask_layer<VALUE_TYPE>(this->mask_layer_, mask_image);
-    
+	// ALGORITHM CLASS
+	// This class does the actual work and is run on a separate thread.
+	// NOTE: The separation of the algorithm into a private class is for the purpose of running the
+	// filter on a separate thread.
+
+	class MRIBiasFieldCorrectionFilterAlgo : public ITKFilter
+	{
+
+	public:
+		LayerHandle src_layer_;
+		LayerHandle dst_layer_;
+
+		std::string replace_with_;
+
+	public:
+		// RUN:
+		// Implemtation of run of the Runnable base class, this function is called when the thread
+		// is launched.
+
+		// NOTE: The macro needs a data type to select which version to run. This needs to be
+		// a member variable of the algorithm class.
+		SCI_BEGIN_TYPED_ITK_RUN(this->src_layer_->get_data_type())
+		{
+			// Define the type of filter that we use.
+			typedef itk::MRIBiasFieldCorrectionFilter<
+				TYPED_IMAGE_TYPE, FLOAT_IMAGE_TYPE, UCHAR_IMAGE_TYPE > filter_type;
+
+			// Retrieve the image as an itk image from the underlying data structure
+			// NOTE: This only does wrapping and does not regenerate the data.
+			typename Core::ITKImageDataT<VALUE_TYPE>::Handle input_image;
+			this->get_itk_image_from_layer<VALUE_TYPE>(this->src_layer_, input_image);
+			auto imageData = input_image->get_image();
+
+			threshold_data(imageData, double 2, double 255);
+
+			//Make mask image some threshold on input image and make it binary
+			typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
+			for (int i = 0; i < input_image->get_nx(); i++)
+			{
+				for (int j = 0; j < input_image->get_ny(); j++)
+				{
+					for (int k = 0; k < input_image->get_nz(); k++)
+					{
+						//if (imageData[i, j, k] <= 2)
+						//{
+						//	mask_image[i, j, k] = 0;
+						//}
+						//else
+						//{
+						//	mask_image[i, j, k] = 1;
+						//}
+					}
+				}
+			}
+
     // Create a new ITK filter instantiation.	
     typename filter_type::Pointer filter = filter_type::New();
     
@@ -107,6 +126,7 @@ public:
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
+	//filter->SetInput( mask_image->get_image() );
     
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
