@@ -32,6 +32,7 @@
 
 #include <locale>
 #include <cstdlib>
+//#include <Windows.h>
 
 // Core includes
 #include <Core/Application/Application.h>
@@ -54,7 +55,12 @@ int main( int argc, char **argv )
   putenv("LANG=C");
 
   Core::Application::Instance()->parse_command_line_parameters( argc, argv );
-    
+
+#if defined (_WIN32)
+  BOOL WINAPI SetProcessDPIAware(void);
+  QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+#endif
+
   Seg3DBase* app = NULL;
   bool headless = Core::Application::Instance()->is_command_line_parameter( "headless" );
   if ( headless )
