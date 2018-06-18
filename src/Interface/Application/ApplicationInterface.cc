@@ -201,10 +201,7 @@ ApplicationInterface::ApplicationInterface( std::string file_to_view_on_open ) :
 
   QtUtils::QtBridge::Show( this->private_->provenance_dock_window_,
     InterfaceManager::Instance()->provenance_dockwidget_visibility_state_ );
-
-//  QtUtils::QtBridge::Show( this->private_->history_dock_window_,
-//    InterfaceManager::Instance()->history_dockwidget_visibility_state_ );
-
+    
   QtUtils::QtBridge::Show( this->private_->preferences_interface_,
     InterfaceManager::Instance()->preferences_manager_visibility_state_ );
 
@@ -372,11 +369,6 @@ void ApplicationInterface::closeEvent( QCloseEvent* event )
     this->private_->python_console_->deleteLater();
   }
 #endif
-//  if( this->private_->history_dock_window_ )
-//  {
-//    this->private_->history_dock_window_->close();
-//    this->private_->history_dock_window_->deleteLater();
-//  }
 
   if( this->private_->project_dock_window_ )
   {
