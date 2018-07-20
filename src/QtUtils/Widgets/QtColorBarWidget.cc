@@ -56,7 +56,7 @@ QtColorBarWidget::QtColorBarWidget( QWidget *parent ) :
   this->private_->color_button_group_ = new QButtonGroup( this );
   
   this->connect( this->private_->color_button_group_, SIGNAL( buttonClicked( int ) ),
-    this, SLOT( signal_activation( int ) ) ); 
+    this, SLOT( signal_activation( int ) ) );
 }
 
 QtColorBarWidget::~QtColorBarWidget()

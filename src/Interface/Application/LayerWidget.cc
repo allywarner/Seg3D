@@ -554,7 +554,7 @@ LayerWidget::LayerWidget( QFrame* parent, LayerHandle layer ) :
   this->private_->ui_.horizontalLayout_14->addWidget( this->private_->color_widget_ );
   this->private_->color_widget_->setObjectName( QString::fromUtf8( "color_widget_" ) );
   this->private_->activate_button_->setIconSize( QSize(38, 43) );
-    
+
   this->connect( this->private_->ui_.abort_button_,
     SIGNAL ( pressed() ), this, SLOT( trigger_abort() ) );
 
