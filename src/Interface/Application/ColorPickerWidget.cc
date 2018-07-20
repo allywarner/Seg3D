@@ -114,8 +114,6 @@ void ColorPickerWidget::choose_color_button_clicked()
     
     Q_EMIT color_changed();
   }
-    
-  this->set_color();
 }
 
 void ColorPickerWidget::signal_color_set()
