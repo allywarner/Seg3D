@@ -32,6 +32,9 @@
 // QtUtils includes
 #include <QtUtils/Bridge/QtBridge.h>
 
+//Qt includes
+#include <QColorDialog>
+
 // Interface includes
 #include <Interface/Application/ColorPickerWidget.h>
 
@@ -45,54 +48,21 @@ class ColorPickerWidgetPrivate
 {
 public:
   Ui::ColorPickerWidget ui_;
-  QtUtils::QtSliderIntCombo* r_adjuster_;
-  QtUtils::QtSliderIntCombo* g_adjuster_;
-  QtUtils::QtSliderIntCombo* b_adjuster_;
-
 };
 
 ColorPickerWidget::ColorPickerWidget( QWidget *parent ) :
     QWidget( parent ),
     private_( new ColorPickerWidgetPrivate )
 {
-    private_->ui_.setupUi( this );
+  private_->ui_.setupUi( this );
   
-  // add the SliderCombo Widgets
-  this->private_->r_adjuster_ = new QtUtils::QtSliderIntCombo( this );
-  this->private_->ui_.r_h_layout_->addWidget( this->private_->r_adjuster_ );
-  this->private_->r_adjuster_->setObjectName( QString::fromUtf8( "r_adjuster_" ) );
-  this->private_->r_adjuster_->setRange( 0, 255 );
-  this->private_->r_adjuster_->setCurrentValue( 0 );
-  
-  this->private_->g_adjuster_ = new QtUtils::QtSliderIntCombo( this );
-  this->private_->ui_.g_h_layout_->addWidget( this->private_->g_adjuster_ );
-  this->private_->g_adjuster_->setObjectName( QString::fromUtf8( "g_adjuster_" ) );
-  this->private_->g_adjuster_->setRange( 0, 255 );
-  this->private_->g_adjuster_->setCurrentValue( 0 );
-  
-  this->private_->b_adjuster_ = new QtUtils::QtSliderIntCombo( this );
-  this->private_->ui_.b_h_layout_->addWidget( this->private_->b_adjuster_ );
-  this->private_->b_adjuster_->setObjectName( QString::fromUtf8( "b_adjuster_" ) );
-  this->private_->b_adjuster_->setRange( 0, 255 );
-  this->private_->b_adjuster_->setCurrentValue( 0 );
-  
-  this->private_->r_adjuster_->set_description( "R" );
-  this->private_->g_adjuster_->set_description( "G" );
-  this->private_->b_adjuster_->set_description( "B" );
-  
-
   connect( this, SIGNAL( color_changed() ), this, SLOT( set_color() ) );
 
-  connect( this->private_->r_adjuster_, SIGNAL( valueAdjusted( int ) ), 
-    this, SLOT( set_r( int ) ) );
-  connect( this->private_->g_adjuster_, SIGNAL( valueAdjusted( int ) ), 
-    this, SLOT( set_g( int ) ) );
-  connect( this->private_->b_adjuster_, SIGNAL( valueAdjusted( int ) ),
-    this, SLOT( set_b( int ) ) );
-  connect( this->private_->ui_.set_color_button_, SIGNAL( clicked() ), 
+  connect( this->private_->ui_.set_color_button_, SIGNAL( clicked() ),
     this, SLOT( signal_color_set() ) );
-
-
+    
+  connect( this->private_->ui_.choose_color_button_, SIGNAL( clicked() ),
+                     this, SLOT( choose_color_button_clicked() ) );
 }
 
 ColorPickerWidget::~ColorPickerWidget()
@@ -122,33 +92,30 @@ void ColorPickerWidget::hide_show( Core::Color color, bool show )
   this->r_ = static_cast< int >( color.r() );
   this->g_ = static_cast< int >( color.g() );
   this->b_ = static_cast< int >( color.b() );
-  
-  this->private_->r_adjuster_->setCurrentValue( this->r_ );
-  this->private_->g_adjuster_->setCurrentValue( this->g_ );
-  this->private_->b_adjuster_->setCurrentValue( this->b_ );
-  
+    
   this->set_color();
   
   this->setVisible( true );
   
 }
-  
-void ColorPickerWidget::set_r( int r )
+    
+void ColorPickerWidget::choose_color_button_clicked()
 {
-  this->r_ = r;
-  Q_EMIT color_changed();
-}
-
-void ColorPickerWidget::set_g( int g )
-{
-  this->g_ = g;
-  Q_EMIT color_changed();
-}
-
-void ColorPickerWidget::set_b( int b )
-{
-  this->b_ = b;
-  Q_EMIT color_changed();
+  Core::StateEngine::lock_type lock( Core::StateEngine::GetMutex() );
+            
+  // Launch dialog to allow user to select color
+  QColor color = QColorDialog::getColor( QColor( this->r_, this->g_, this->b_ ), this );
+    
+  if( color.isValid() )
+  {
+    this->r_ = color.red();
+    this->g_ = color.green();
+    this->b_ = color.blue();
+    
+    Q_EMIT color_changed();
+  }
+    
+  this->set_color();
 }
 
 void ColorPickerWidget::signal_color_set()

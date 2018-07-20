@@ -68,10 +68,8 @@ private:
   int b_;
   
 private Q_SLOTS:
-  void set_r( int );
-  void set_g( int );
-  void set_b( int );
   void signal_color_set();
+  void choose_color_button_clicked();
     
 
 private:
