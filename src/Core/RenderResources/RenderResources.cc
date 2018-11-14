@@ -60,7 +60,7 @@ public:
   void initialize_gl();
 
   //Error checking for GL initialization.
-  void error_check_for_initialize_gl(std::string);
+  void initialize_gl_log_error(const std::string&);
   
   // Query available video memory size.
   void query_video_memory_size();
@@ -92,11 +92,10 @@ public:
   }
 };
 
-void RenderResourcesPrivate::error_check_for_initialize_gl(std::string error_string)
+void RenderResourcesPrivate::initialize_gl_log_error(const std::string& error_string)
 {
   this->gl_capable_ = false;
   CORE_LOG_ERROR(error_string);
-  return;
 }
   
 void RenderResourcesPrivate::initialize_gl()
@@ -105,24 +104,26 @@ void RenderResourcesPrivate::initialize_gl()
   int err = glewInit();
   if (err != GLEW_OK)
   {
-    error_check_for_initialize_gl( "glewInit failed with error code " + Core::ExportToString(err) );
+    initialize_gl_log_error( "glewInit failed with error code " + Core::ExportToString(err) );
   }
   
   // Check OpenGL capabilities
-  if ( !GLEW_VERSION_2_0 )
+  else if ( !GLEW_VERSION_2_0 )
   {
-    error_check_for_initialize_gl( "OpenGL 2.0 required but not found." );
+    initialize_gl_log_error( "OpenGL 2.0 required but not found." );
   }
-  if ( !GLEW_EXT_framebuffer_object )
+  else if ( !GLEW_EXT_framebuffer_object )
   {
-    error_check_for_initialize_gl( "GL_EXT_framebuffer_object required but not found." );
+    initialize_gl_log_error( "GL_EXT_framebuffer_object required but not found." );
   }
-  if ( !GLEW_ARB_pixel_buffer_object )
+  else if ( !GLEW_ARB_pixel_buffer_object )
   {
-    error_check_for_initialize_gl( "GL_ARB_pixel_buffer_object required but not found." );
+    initialize_gl_log_error( "GL_ARB_pixel_buffer_object required but not found." );
   }
-
-  this->gl_capable_ = true;
+  else 
+  {
+    this->gl_capable_ = true;
+  }
 }
   
 void RenderResourcesPrivate::query_video_memory_size()
