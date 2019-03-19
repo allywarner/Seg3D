@@ -84,6 +84,13 @@ TARGET_LINK_LIBRARIES(Seg3D_lib
   ${Qt5Widgets_LIBRARIES}
 )
 
+#IF(BUILD_WITH_PYTHON)
+#  TARGET_LINK_LIBRARIES(Seg3D_lib
+#    Core_Python
+#    Application_Socket
+#  )
+#ENDIF()
+
 REGISTERED_TARGET_LINK_LIBRARIES(Seg3D_lib)
 
 #########################################################
