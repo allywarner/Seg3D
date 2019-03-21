@@ -88,6 +88,7 @@ IF(BUILD_WITH_PYTHON)
   TARGET_LINK_LIBRARIES(Seg3D_lib
     Core_Python
     Application_Socket
+    ${SCI_PYTHON_LIBRARY}
   )
 ENDIF()
 
