@@ -102,7 +102,7 @@ INCLUDE(CMake/RegisterUnitTest.cmake)
 
 SET(SEG3D_MAJOR_VERSION 2 CACHE INTERNAL "Major version number" FORCE)
 SET(SEG3D_MINOR_VERSION 4 CACHE INTERNAL "Minor version number" FORCE)
-SET(SEG3D_PATCH_VERSION 2 CACHE INTERNAL "Patch version number" FORCE)
+SET(SEG3D_PATCH_VERSION 4 CACHE INTERNAL "Patch version number" FORCE)
 
 
 ###########################################
@@ -144,6 +144,14 @@ ELSE()
   ADD_DEFINITIONS(-DSCI_32BITS)
 ENDIF()
 
+IF(BUILD_STANDALONE_LIBRARY)
+  MESSAGE("Library build successful")
+  ADD_DEFINITIONS(-DBUILD_STANDALONE_LIBRARY)
+ENDIF()
+
+IF(BUILD_MANUAL_TOOLS_ONLY)
+  ADD_DEFINITIONS(-DBUILD_MANUAL_TOOLS_ONLY)
+ENDIF()
 
 ###########################################
 # Microsoft VC compiler flags
@@ -317,7 +325,6 @@ ENDIF()
 
 ADD_SUBDIRECTORY(ThirdParty)
 
-
 ###########################################
 # Check for "XInitThreads" on X-window
 # systems.
@@ -392,11 +399,11 @@ IF(BUILD_WITH_PYTHON)
 ENDIF()
 
 IF(BUILD_TESTING)
-  INCLUDE_DIRECTORIES( ${SCI_GTEST_INCLUDE} ${SCI_GMOCK_INCLUDE}  )
+  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/submodules/googletest/googletest/include)
+  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/submodules/googletest/googlemock/include)
 ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
 
 ###########################################
 # Generate a variable for registering all
@@ -409,7 +416,6 @@ INCLUDE(CMake/RegisterClass.cmake)
 ###########################################
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules")
-
 
 ###########################################
 # Application layers:

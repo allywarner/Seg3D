@@ -1,6 +1,5 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-#
 #  The MIT License
 #
 #  Copyright (c) 2016 Scientific Computing and Imaging Institute,
@@ -26,18 +25,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(APPLICATION_IRTOOLS_ACTIONS_TESTS_SRCS
-  ActionAssembleFilterTests.cc
-  ActionFFTFilterTests.cc
-  ActionRefineTranslateFilterTests.cc
+
+############################################
+# Set Seg3D main sources
+###########################################
+
+SET(SEG3DLIB_MAIN_SRCS
+  Seg3DLib_example_main.cc
 )
 
-REGISTER_UNIT_TEST(Application_ImageRegistrationTools_Actions_Tests
-  ${APPLICATION_IRTOOLS_ACTIONS_TESTS_SRCS}
+###########################################
+# Build the Seg3D executable
+###########################################
+
+ADD_EXECUTABLE(Seg3DLib ${SEG3DLIB_MAIN_SRCS})
+
+TARGET_LINK_LIBRARIES(Seg3DLib
+  Seg3D_lib
 )
 
-TARGET_LINK_LIBRARIES(Application_ImageRegistrationTools_Actions_Tests
-  Application_ImageRegistrationTools
-  gtest
-  gtest_main
-)
+ADD_SUBDIRECTORY(Lib)
