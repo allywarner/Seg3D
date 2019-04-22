@@ -74,6 +74,8 @@ namespace Seg3D
 		LayerHandle src_layer_;
 		LayerHandle dst_layer_;
 
+    bool preserve_data_format_;
+
 	public:
 		// RUN:
 		// Implemtation of run of the Runnable base class, this function is called when the thread
@@ -132,10 +134,13 @@ namespace Seg3D
     
     // Relay abort and progress information to the layer that is executing the filter.
     this->forward_abort_to_filter( filter, this->dst_layer_ );
-    this->observe_itk_progress( filter, this->dst_layer_, 0.0, 0.75 );
+    this->observe_itk_progress( filter, this->dst_layer_);
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
+
+
+
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
     
@@ -161,8 +166,18 @@ namespace Seg3D
     // This one is set when the abort button is pressed and an abort is sent to ITK.
     if ( this->check_abort() ) return;
 
-	  filter->GetOutput();
-
+    // If we want to preserve the data type we convert the data before inserting it back.
+    // NOTE: Conversion is done on the filter thread and insertion is done on the application
+    // thread.
+    if (this->preserve_data_format_)
+    {
+      this->convert_and_insert_itk_image_into_layer(this->dst_layer_,
+        filter->GetOutput(), this->src_layer_->get_data_type());
+    }
+    else
+    {
+      this->insert_itk_image_into_layer(this->dst_layer_, filter->GetOutput());
+    }
   }
 
   SCI_END_TYPED_ITK_RUN()
@@ -191,6 +206,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   
   // Copy the parameters over to the algorithm that runs the filter
   algo->set_sandbox( this->sandbox_ );
+  algo->preserve_data_format_ = this->preserve_data_format_;
   
   // Find the handle to the layer
   if ( !( algo->find_layer( this->target_layer_, algo->src_layer_ ) ) )
@@ -235,7 +251,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
 }
 
 void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle context,
-                                                  std::string target_layer, bool replace )
+                      std::string target_layer, bool replace, bool preserve_data_format )
 {	
   // Create a new action
   ActionMRIBiasFieldCorrectionFilter* action = new ActionMRIBiasFieldCorrectionFilter;
@@ -243,6 +259,7 @@ void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle con
   // Setup the parameters
   action->target_layer_ = target_layer;
   action->replace_ = replace;
+  action->preserve_data_format_ = preserve_data_format;
   
   // Dispatch action to underlying engine
   Core::ActionDispatcher::PostAction( Core::ActionHandle( action ), context );
