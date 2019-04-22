@@ -177,7 +177,7 @@
       <item>
        <widget class="QLabel" name="message_">
         <property name="text">
-         <string>Select data &amp; mask layers to activate this filter.</string>
+         <string>Select a data layer to activate this filter.</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
