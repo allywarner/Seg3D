@@ -136,11 +136,8 @@ namespace Seg3D
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
-	//filter->SetInput( mask_image->get_image() );
-    
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
-
     
     // Run the actual ITK filter.
     // This needs to be in a try/catch statement as certain filters throw exceptions when they
@@ -164,9 +161,10 @@ namespace Seg3D
     // This one is set when the abort button is pressed and an abort is sent to ITK.
     if ( this->check_abort() ) return;
 
-	filter->GetOutput();
+	  filter->GetOutput();
 
   }
+
   SCI_END_TYPED_ITK_RUN()
   
   // GET_FITLER_NAME:

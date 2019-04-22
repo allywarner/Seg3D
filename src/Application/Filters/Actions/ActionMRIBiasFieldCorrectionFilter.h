@@ -29,8 +29,11 @@
 #ifndef APPLICATION_FILTERS_ACTIONS_ACTIONMRIBIASFIELDCORRECTIONFILTER_H
 #define APPLICATION_FILTERS_ACTIONS_ACTIONMRIBIASFIELDCORRECTIONFILTER_H
 
+//Core includes
 #include <Core/Action/Actions.h>
 #include <Core/Interface/Interface.h>
+
+//Application includes
 #include <Application/Layer/Layer.h>
 #include <Application/Layer/LayerAction.h>
 #include <Application/Layer/LayerManager.h>
@@ -45,6 +48,8 @@ CORE_ACTION(
   CORE_ACTION_TYPE( "MRIBiasFieldCorrectionFilter", "ITK filter that corrects nonuniformity in MRI images." )
   CORE_ACTION_ARGUMENT( "layerid", "The layerid on which this filter needs to be run." )
   CORE_ACTION_OPTIONAL_ARGUMENT( "replace", "true", "Replace the old layer (true), or add an new layer (false)" )
+  CORE_ACTION_OPTIONAL_ARGUMENT("preserve_data_format", "true", "ITK filters run in floating point percision,"
+    " this option will convert the result back into the original format.")
   CORE_ACTION_OPTIONAL_ARGUMENT( "sandbox", "-1", "The sandbox in which to run the action." )
   CORE_ACTION_ARGUMENT_IS_NONPERSISTENT( "sandbox" )	
   CORE_ACTION_CHANGES_PROJECT_DATA()
@@ -57,6 +62,7 @@ public:
   {
     this->add_layer_id( this->target_layer_ );
     this->add_parameter( this->replace_ );
+    this->add_parameter(this->preserve_data_format_);
 	this->add_parameter(this->sandbox_);
   }
   
@@ -70,13 +76,15 @@ private:
   
   std::string target_layer_;
   bool replace_;
+  bool preserve_data_format_;
   SandboxID sandbox_;
   
   // -- Dispatch this action from the interface --
 public:
   // DISPATCH:
   // Create and dispatch action that inserts the new layer 
-    static void Dispatch( Core::ActionContextHandle context, std::string target_layer, bool replace);
+    static void Dispatch( Core::ActionContextHandle context,
+      std::string target_layer, bool replace, bool preserve_data_format);
 };
 	
 } // end namespace Seg3D
