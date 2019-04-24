@@ -111,6 +111,7 @@ namespace Seg3D
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
+    //filter->Initialize();
     auto imageData = input_image->get_image();
     auto region = imageData->GetLargestPossibleRegion();
     unsigned int degree = 3;

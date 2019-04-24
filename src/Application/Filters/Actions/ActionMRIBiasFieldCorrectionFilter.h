@@ -65,7 +65,7 @@ public:
     this->add_parameter( this->replace_ );
     this->add_parameter(this->preserve_data_format_);
     this->add_parameter( this->iterations_ );
-	this->add_parameter(this->sandbox_);
+	  this->add_parameter(this->sandbox_);
   }
   
   // -- Functions that describe action --
