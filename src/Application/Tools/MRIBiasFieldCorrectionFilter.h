@@ -41,7 +41,7 @@ SEG3D_TOOL(
   SEG3D_TOOL_MENULABEL( "MRI Bias Field Correction" )
   SEG3D_TOOL_MENU( "Data Filters" )
   SEG3D_TOOL_SHORTCUT_KEY( "CTRL+ALT+SHIFT+B" )
-  SEG3D_TOOL_URL( "http://www.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:MRIBiasFieldCorrection:1" )
+  SEG3D_TOOL_URL( "http://sciinstitute.github.io/seg3d.pages/Tools/MRIBiasFieldCorrectionFilter.html" )
   SEG3D_TOOL_VERSION( "1" )
 )
   
@@ -55,6 +55,9 @@ public:
 
   /// Whether the data format needs to be preserved in the filter
   Core::StateBoolHandle preserve_data_format_state_;
+    
+  /// How many iterations we run the bias filter for
+  Core::StateRangedIntHandle iterations_state_;
    
   // -- execute --
 public:

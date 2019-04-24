@@ -57,6 +57,13 @@ namespace Seg3D
 		// Check for layer availability 
 		if (!LayerManager::CheckLayerAvailability(this->target_layer_,
 			this->replace_, context, this->sandbox_)) return false;
+        
+        // If the number of iterations is lower than one, we cannot run the filter
+        if( this->iterations_ < 1 )
+        {
+            context->report_error( "The number of iterations needs to be larger than or equal to one." );
+            return false;
+        }
 
 		// Validation successful
 		return true;
@@ -75,6 +82,7 @@ namespace Seg3D
 		LayerHandle dst_layer_;
 
     bool preserve_data_format_;
+    int iterations_;
 
 	public:
 		// RUN:
@@ -107,6 +115,7 @@ namespace Seg3D
     auto region = imageData->GetLargestPossibleRegion();
     unsigned int degree = 3;
     int maximumIteration = 4; //todo: user input
+    //int maximumIteration = this->iterations_;
     auto bias = filter->EstimateBiasField(region, degree, maximumIteration);
     filter->CorrectImage(bias, region);
 
@@ -176,6 +185,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
   // Copy the parameters over to the algorithm that runs the filter
   algo->set_sandbox( this->sandbox_ );
   algo->preserve_data_format_ = this->preserve_data_format_;
+  algo->iterations_ = this->iterations_;
   
   // Find the handle to the layer
   if ( !( algo->find_layer( this->target_layer_, algo->src_layer_ ) ) )
@@ -220,7 +230,7 @@ bool ActionMRIBiasFieldCorrectionFilter::run( Core::ActionContextHandle& context
 }
 
 void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle context,
-                      std::string target_layer, bool replace, bool preserve_data_format )
+                      std::string target_layer, bool replace, bool preserve_data_format, int iterations )
 {	
   // Create a new action
   ActionMRIBiasFieldCorrectionFilter* action = new ActionMRIBiasFieldCorrectionFilter;
@@ -229,6 +239,7 @@ void ActionMRIBiasFieldCorrectionFilter::Dispatch( Core::ActionContextHandle con
   action->target_layer_ = target_layer;
   action->replace_ = replace;
   action->preserve_data_format_ = preserve_data_format;
+  action->iterations_ = iterations;
   
   // Dispatch action to underlying engine
   Core::ActionDispatcher::PostAction( Core::ActionHandle( action ), context );

@@ -73,19 +73,26 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
   
   //Step 3 - connect the gui to the tool through the QtBridge
   QtUtils::QtBridge::Connect( this->private_->ui_.target_layer_, 
-                             tool->target_layer_state_ );
+    tool->target_layer_state_ );
   QtUtils::QtBridge::Connect( this->private_->ui_.use_active_layer_, 
-                             tool->use_active_layer_state_ );
+    tool->use_active_layer_state_ );
+  QtUtils::QtBridge::Connect( this->private_->ui_.preserve_data_format_,
+    tool->preserve_data_format_state_ );
+  QtUtils::QtBridge::Connect( this->private_->ui_.iterations_,
+    tool->iterations_state_ );
   QtUtils::QtBridge::Connect( this->private_->ui_.replaceCheckBox, 
-                             tool->replace_state_ );
+    tool->replace_state_ );
+    
   QtUtils::QtBridge::Enable( this->private_->ui_.runFilterButton, 
-							tool->valid_target_state_ );
+    tool->valid_target_state_ );
   QtUtils::QtBridge::Show( this->private_->ui_.message_alert_, 
-							tool->valid_target_state_, true );
+    tool->valid_target_state_, true );
   QtUtils::QtBridge::Enable( this->private_->ui_.target_layer_, 
-                            tool->use_active_layer_state_, true );
+    tool->use_active_layer_state_, true );
   QtUtils::QtBridge::Connect( this->private_->ui_.runFilterButton, boost::bind(&Tool::execute, tool,
 	  Core::Interface::GetWidgetActionContext() ) );
+    
+  this->private_->ui_.iterations_->set_description( "Iterations" );
   return true;
 } // end build_widget
   
