@@ -93,41 +93,6 @@ namespace Seg3D
 			// NOTE: This only does wrapping and does not regenerate the data.
 			typename Core::ITKImageDataT<VALUE_TYPE>::Handle input_image;
 			this->get_itk_image_from_layer<VALUE_TYPE>(this->src_layer_, input_image);
-			auto imageData = input_image->get_image();
-
-			//Make mask image some threshold on input image and make it binary
-			typename Core::ITKImageDataT<VALUE_TYPE>::Handle mask_image;
-
-			auto totalSize = input_image->get_nx()*input_image->get_ny()*input_image->get_nz();
-			std::vector<float> values;
-			double min_val = 2.0;
-			double max_val = 255.0;
-			for (size_t i = 0; i < totalSize; i++)
-			{
-				auto temp_pix = imageData->GetPixel(i);
-				values.push_back(temp_pix);
-				//dst_data[i] = (src_data[i] >= min_val &&
-					//src_data[index] <= max_val) ? 1 : 0;
-			}
-
-
-			for (int i = 0; i < input_image->get_nx(); i++)
-			{
-				for (int j = 0; j < input_image->get_ny(); j++)
-				{
-					for (int k = 0; k < input_image->get_nz(); k++)
-					{
-						//if (imageData[i, j, k] <= 2)
-						//{
-						//	mask_image[i, j, k] = 0;
-						//}
-						//else
-						//{
-						//	mask_image[i, j, k] = 1;
-						//}
-					}
-				}
-			}
 
     // Create a new ITK filter instantiation.	
     typename filter_type::Pointer filter = filter_type::New();
@@ -138,8 +103,12 @@ namespace Seg3D
     
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
-
-
+    auto imageData = input_image->get_image();
+    auto region = imageData->GetLargestPossibleRegion();
+    unsigned int degree = 3;
+    int maximumIteration = 4; //todo: user input
+    auto bias = filter->EstimateBiasField(region, degree, maximumIteration);
+    filter->CorrectImage(bias, region);
 
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );

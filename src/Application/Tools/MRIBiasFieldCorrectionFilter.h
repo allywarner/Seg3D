@@ -40,7 +40,7 @@ SEG3D_TOOL(
   SEG3D_TOOL_NAME( "MRIBiasFieldCorrectionFilter", "Filter for correcting nonuniformity in MRIs" )
   SEG3D_TOOL_MENULABEL( "MRI Bias Field Correction" )
   SEG3D_TOOL_MENU( "Data Filters" )
-  SEG3D_TOOL_SHORTCUT_KEY( "CTRL+ALT+P" )
+  SEG3D_TOOL_SHORTCUT_KEY( "CTRL+ALT+SHIFT+B" )
   SEG3D_TOOL_URL( "http://www.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:MRIBiasFieldCorrection:1" )
   SEG3D_TOOL_VERSION( "1" )
 )
@@ -49,14 +49,12 @@ public:
   MRIBiasFieldCorrectionFilter( const std::string& toolid );
   virtual ~MRIBiasFieldCorrectionFilter();
   
-private:
-  // -- handle updates from layermanager --
-  void handle_layers_changed();
-  
-  // -- state --
 public:
   // Whether the layer needs to be replaced
   Core::StateBoolHandle replace_state_;
+
+  /// Whether the data format needs to be preserved in the filter
+  Core::StateBoolHandle preserve_data_format_state_;
    
   // -- execute --
 public:
