@@ -93,6 +93,7 @@ bool MRIBiasFieldCorrectionFilterInterface::build_widget( QFrame* frame )
 	  Core::Interface::GetWidgetActionContext() ) );
     
   this->private_->ui_.iterations_->set_description( "Iterations" );
+  this->private_->ui_.iterations_->setCurrentValue(4);
   return true;
 } // end build_widget
   

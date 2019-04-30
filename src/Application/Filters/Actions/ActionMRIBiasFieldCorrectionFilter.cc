@@ -28,6 +28,7 @@
 
 // ITK includes
 #include <itkMRIBiasFieldCorrectionFilter.h>
+#include <itkN4BiasFieldCorrectionImageFilter.h>
 
 // Application includes
 #include <Application/Layer/LayerManager.h>
@@ -94,8 +95,11 @@ namespace Seg3D
 		SCI_BEGIN_TYPED_ITK_RUN(this->src_layer_->get_data_type())
 		{
 			// Define the type of filter that we use.
-			typedef itk::MRIBiasFieldCorrectionFilter<
-				TYPED_IMAGE_TYPE, FLOAT_IMAGE_TYPE, UCHAR_IMAGE_TYPE > filter_type;
+			//typedef itk::MRIBiasFieldCorrectionFilter<
+				//TYPED_IMAGE_TYPE, FLOAT_IMAGE_TYPE, UCHAR_IMAGE_TYPE > filter_type;
+
+      typedef itk::N4BiasFieldCorrectionImageFilter<
+        TYPED_IMAGE_TYPE, FLOAT_IMAGE_TYPE, UCHAR_IMAGE_TYPE > filter_type;
 
 			// Retrieve the image as an itk image from the underlying data structure
 			// NOTE: This only does wrapping and does not regenerate the data.
@@ -112,13 +116,12 @@ namespace Seg3D
     // Setup the filter parameters that we do not want to change.
     filter->SetInput( input_image->get_image() );
     //filter->Initialize();
-    auto imageData = input_image->get_image();
-    auto region = imageData->GetLargestPossibleRegion();
-    unsigned int degree = 3;
-    int maximumIteration = 4; //todo: user input
+    //auto imageData = input_image->get_image();
+    //auto region = imageData->GetLargestPossibleRegion();
+    //unsigned int degree = 3;
     //int maximumIteration = this->iterations_;
-    auto bias = filter->EstimateBiasField(region, degree, maximumIteration);
-    filter->CorrectImage(bias, region);
+    //auto bias = filter->EstimateBiasField(region, degree, maximumIteration);
+    //filter->CorrectImage(bias, region);
 
     // Ensure we will have some threads left for doing something else
     this->limit_number_of_itk_threads( filter );
