@@ -73,6 +73,7 @@ OPTION(BUILD_LARGE_VOLUME_TOOLS "Build with large volume (bricked) dataset suppo
 SET(DEFAULT_MOSAIC_SETTING ON)
 IF(WIN32)
   # still highly experimental on Windows...
+  #have to download FFTW and use ITK_USE_SYSTEM_FFTW
   SET(DEFAULT_MOSAIC_SETTING OFF)
 ENDIF()
 OPTION(BUILD_MOSAIC_TOOLS "Build with mosaicing tool support." ${DEFAULT_MOSAIC_SETTING})
