@@ -57,6 +57,53 @@ SCI_REGISTER_TOOLINTERFACE( Seg3D, PointsSelectToolInterface )
 namespace Seg3D
 {
 
+//Custom file dialog for units check
+class MyFileDialog : public QFileDialog
+{
+public:
+  MyFileDialog(QWidget *, const QString& a,
+    const QString& b, const QString& c);
+  bool unitsCheck();
+  QSize sizeHint() const;
+private:
+  QCheckBox * units_checkbox_;
+};
+
+bool MyFileDialog::unitsCheck()
+{
+  return this->units_checkbox_->isChecked();
+}
+
+MyFileDialog::MyFileDialog(QWidget *parent, const QString& a,
+  const QString& b, const QString& c) :
+  QFileDialog(parent, a, b, c),
+  units_checkbox_(nullptr)
+{
+  setOption(QFileDialog::DontUseNativeDialog, true);
+  setFileMode(QFileDialog::ExistingFiles);
+  QGridLayout* mainLayout = dynamic_cast<QGridLayout*>(layout());
+
+  QHBoxLayout *hbl = new QHBoxLayout();
+
+  // add some widgets
+  units_checkbox_ = new QCheckBox("Points are in pixel units", this);
+  units_checkbox_->setChecked(false);
+  hbl->addWidget(units_checkbox_);
+  hbl->addItem(new QSpacerItem(30, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+
+  int numRows = mainLayout->rowCount();
+
+  // add the new layout to the bottom of mainLayout
+  // and span all columns
+  mainLayout->addLayout(hbl, numRows, 0, 1, -1);
+}
+
+QSize MyFileDialog::sizeHint() const
+{
+  return QSize(800, 600);
+}
+//End of custom dialog
+
 class PointsSelectToolInterfacePrivate
 {
 public:
@@ -67,16 +114,36 @@ public:
   void import_points_from_file() const;
 };
 
-void import_points_from_file() const
+void PointsSelectToolInterfacePrivate::import_points_from_file() const
 {
   Core::StateEngine::lock_type lock ( Core::StateEngine::GetMutex() );
 
-  PointsSelectTool* tool = dynamic_cast< PointsSelectTool* > (this->interface_ tool().get() );
+  PointsSelectTool* tool = dynamic_cast<PointsSelectTool*> (this->interface_->tool().get());
 
-  //get imported filename
-  //read file
-  //propegate onto table
-  //render crosses
+  //change to only allow for one file at a time
+  QStringList filename;
+  boost::filesystem::path current_folder = ProjectManager::Instance()->get_current_file_folder();
+  std::string file_type = Core::StringToUpper("Text File") + "(*.txt)";
+
+  MyFileDialog dialog(this->interface_, "Select Points File...",
+                                         current_folder.string().c_str(),
+                                         QString::fromStdString( file_type ) );
+  if (dialog.exec())
+  {
+    filename = dialog.selectedFiles();
+  }
+  bool units = dialog.unitsCheck();
+
+  if (filename.isEmpty())
+  {
+    CORE_LOG_ERROR("File not selected");
+  }
+  else 
+  {
+    CORE_LOG_ERROR("Hi!");
+    ActionExportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
+      filename[0].toStdString(), tool->seed_points_state_->get());
+  }
 }
 
 void PointsSelectToolInterfacePrivate::export_points_to_file() const
@@ -167,6 +234,9 @@ PointsSelectToolInterface::build_widget( QFrame* frame )
 
   QtUtils::QtBridge::Connect( this->private_->ui_.export_button_, boost::bind(
     &PointsSelectToolInterfacePrivate::export_points_to_file, this->private_ ) );
+
+  QtUtils::QtBridge::Connect(this->private_->ui_.import_button_, boost::bind(
+    &PointsSelectToolInterfacePrivate::import_points_from_file, this->private_));
 
   QtUtils::QtBridge::Connect( units_button_group, tool->units_selection_state_ );
 
