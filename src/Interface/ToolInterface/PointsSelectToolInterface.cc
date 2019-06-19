@@ -132,7 +132,16 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   {
     filename = dialog.selectedFiles();
   }
-  bool units = dialog.unitsCheck();
+
+  bool pixel_units = dialog.unitsCheck();
+  if (pixel_units)
+  {
+    tool->use_world_units_state_->set(false);
+  }
+  else
+  {
+    tool->use_world_units_state_->set(true);
+  }
 
   if (filename.isEmpty())
   {
@@ -141,8 +150,8 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   else 
   {
     CORE_LOG_ERROR("Hi!");
-    ActionExportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
-      filename[0].toStdString(), tool->seed_points_state_->get());
+    //ActionImportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
+      //filename[0].toStdString(), tool->seed_points_state_->get());
   }
 }
 
