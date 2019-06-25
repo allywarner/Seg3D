@@ -134,14 +134,16 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   }
 
   bool pixel_units = dialog.unitsCheck();
-  if (pixel_units)
+
+  //figure out where this goes. Needs to be on application thread.
+  /*if (pixel_units)
   {
     tool->use_world_units_state_->set(false);
   }
   else
   {
     tool->use_world_units_state_->set(true);
-  }
+  }*/
 
   if (filename.isEmpty())
   {
@@ -150,8 +152,9 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   else 
   {
     CORE_LOG_ERROR("Hi!");
+    //Dispatch call to action code
     //ActionImportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
-      //filename[0].toStdString(), tool->seed_points_state_->get());
+      //filename[0].toStdString(), pixel_units);
   }
 }
 
