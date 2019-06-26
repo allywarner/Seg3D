@@ -82,14 +82,22 @@ Point AffineCombination( const Point& p1, double w1, const Point& p2, double w2,
 
 std::ostream& operator<<( std::ostream& os, const Point& p )
 {
-  os << '[' << p.x() << ' ' << p.y() << ' ' << p.z() << ']';
-  return os;
+  return os << '[' << p.x() << ' ' << p.y() << ' ' << p.z() << ']';
 }
 
 std::ostream& operator<<( std::ostream& os, const PointF& p )
 {
-  os << '[' << p.x() << ' ' << p.y() << ' ' << p.z() << ']';
-  return os;
+  return os << '[' << p.x() << ' ' << p.y() << ' ' << p.z() << ']';
+}
+
+std::istream& operator>>(std::istream& is, Point& p)
+{
+  return is >>p.data_[0] >> p.data_[1] >> p.data_[2];
+}
+
+std::istream& operator>>(std::istream& is, PointF& p)
+{
+  return is >> p.data_[0] >> p.data_[1] >> p.data_[2];
 }
 
 bool Point::Overlap( double a, double b, double e )

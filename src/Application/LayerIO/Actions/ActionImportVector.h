@@ -46,9 +46,8 @@ class ActionImportVector : public Core::Action
 public:
   using Vector = std::vector<T>;
 
-  ActionImportVector(const std::string& file_path, const Vector& vector, ReaderT reader) :
+  ActionImportVector(const std::string& file_path, ReaderT reader) :
     file_path_(file_path),
-    vector_(vector),
     reader_(reader)
   {
   }
@@ -71,45 +70,40 @@ public:
       return false;
     }
 
-    if (this->vector_.empty())
-    {
-      context->report_error(std::string("No vector available to read."));
-      return false;
-    }
     return true; // validated
   }
 
   // RUN:
   // Each action needs to have this piece implemented. It spells out how the
   // action is run. It returns whether the action was successful or not.
-  virtual bool run( Core::ActionContextHandle& context, Core::ActionResultHandle&) override
+  virtual bool run( Core::ActionContextHandle& context, Core::ActionResultHandle& result) override
   {
-    std::string message("Importing vector.");
-
-    Core::ActionProgressHandle progress =
-      Core::ActionProgressHandle(new Core::ActionProgress(message));
-
+    std::string message("Importing vector...");
+    Core::ActionProgressHandle progress(new Core::ActionProgress(message));
     progress->begin_progress_reporting();
 
     boost::filesystem::path filename = boost::filesystem::path(this->file_path_);
-
-    std::ifstream inputfile;
+    std::vector<T> import_vector;
+    std::ifstream input_file;
 
     try
     {
-      inputfile.open(filename.string().c_str());
+      input_file.open(filename.string());
+      //what precision? give variable
+      input_file.precision(10);
+      std::copy(std::istream_iterator<T>(input_file),
+        std::istream_iterator<T>(),
+        std::back_inserter(import_vector));
 
-      for (const auto& t : vector_)
-      {
-        reader_(outputfile, t);
-      }
+      result.reset(new Core::ActionResult(import_vector));
+
     }
     catch (...)
     {
-      context->report_error("Could not open and write to file: " + filename.string());
+      context->report_error("Could not open and read from file: " + filename.string());
       return false;
     }
-    outputfile.close();
+    input_file.close();
 
     progress->end_progress_reporting();
 
@@ -117,7 +111,6 @@ public:
   }
 
   void set_file_path( const std::string& file_path ) { file_path_ = file_path; }
-  void set_vector(const Vector& vector) { vector_ = vector; }
 
   // -- Action parameters --
 protected:
@@ -125,14 +118,10 @@ protected:
   {
     //TODO figure out
     this->add_parameter( this->file_path_ );
-    this->add_parameter(this->vector_);
   }
 private:
-  // Where the layer should be exported
+  // Where the layer should be imported from
   std::string file_path_;
-  // Vector to be exported
-  Vector vector_;
-
   ReaderT reader_;
 };
 

@@ -47,21 +47,11 @@ CORE_REGISTER_ACTION( Seg3D, ImportPoints )
 
 namespace Seg3D
 {
-  //change double to something general
-  void PointReader::operator()(std::vector<Core::Point> input_point&, std::string line&) const
+  std::istream& PointReader::operator()(std::istream& i, Core::Point& p) const
   {
-    char delimiter = " ";
-    std::vector<std::string> temp_str;
-    string tok;
-    std::stringstream ss(line);
-
-    while(getline(ss,tok,delimiter))
-    {
-      temp_str.push_back(tok);
-    }
-
-    auto input_point.x = std::stod(temp_str[0]);
-    auto input_point.y = std::stod(temp_str[1]);
-    auto input_point.z = std::stod(temp_str[2]);
+    double x, y, z;
+    i >> x >> y >> z;
+    p = Core::Point(x, y, z);
+    return i;
   }
 } // end namespace Seg3D

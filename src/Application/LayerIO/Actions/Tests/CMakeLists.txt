@@ -27,6 +27,7 @@
 
 SET(Application_LayerIO_Tests_SRCS
   ActionExportVectorTests.cc
+  ActionImportVectorTests.cc
 )
 
 REGISTER_UNIT_TEST(Application_LayerIO_Tests

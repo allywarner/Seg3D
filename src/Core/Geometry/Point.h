@@ -58,7 +58,7 @@ namespace Core
 // NOTE: The need for double versions of Vector and Point stem from memory 
 // concerns. A lot of the geometry is defined as a large amount of points
 // without the need for double precision. Doing this in double precision is
-// just a waist of memory resources. Hence for those cases we define a VectorF
+// just a waste of memory resources. Hence for those cases we define a VectorF
 // and PointF class.
 
 class Vector;
@@ -151,6 +151,7 @@ public:
   bool InInterval( Point a, double epsilon );
 
   friend std::ostream& operator<<( std::ostream& os, const Point& p );
+  friend std::istream& operator>>(std::istream& is, Point& p);
 }; // end class Point
 
 
@@ -239,6 +240,7 @@ public:
   bool InInterval( PointF a, float epsilon );
 
   friend std::ostream& operator<<( std::ostream& os, const PointF& p );
+  friend std::istream& operator>>(std::istream& is, PointF& p);
 }; // end class PointF
 
 
@@ -263,6 +265,9 @@ inline PointF operator*( float f, const PointF &point )
 
 std::ostream& operator<<( std::ostream& os, const Point& p );
 std::ostream& operator<<( std::ostream& os, const PointF& p );
+
+std::istream& operator>>(std::istream& is, Point& p);
+std::istream& operator>>(std::istream& is, PointF& p);
 
 std::string ExportToString( const Point& value );
 std::string ExportToString( const PointF& value );

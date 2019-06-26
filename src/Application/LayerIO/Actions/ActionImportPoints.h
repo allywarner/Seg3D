@@ -40,24 +40,23 @@ namespace Seg3D
 {
 struct PointReader
 {
-  void operator()(std::vector<Core::Point> input_point&, std::string line&) const;
+  std::istream& PointReader::operator()(std::istream& i, Core::Point& p) const;
 };
 
 
-class ActionImportPoints : public ActionImportVector<bool, PointReader>
+class ActionImportPoints : public ActionImportVector<Core::Point, PointReader>
 {
   CORE_ACTION(
     CORE_ACTION_TYPE("ImportPoints", "This action imports a list of points (x y z) to Seg3D.")
     CORE_ACTION_ARGUMENT("file_path", "Path to the file that the points will be read from.")
-    CORE_ACTION_ARGUMENT("line", "Specific line in the file.")
     CORE_ACTION_CHANGES_PROJECT_DATA()
     )
 
 
 public:
-  using Base = ActionImportVector<std::vector<Core::Point> input_point, PointReader>;
-  ActionImportPoints(const std::string& file_path, const std::string line&) :
-    Base(file_path, pixel_units, PointReader())
+  using Base = ActionImportVector<Core::Point, PointReader>;
+  ActionImportPoints(const std::string& file_path) :
+    Base(file_path, PointReader())
   {
     init_parameters();
   }
@@ -68,11 +67,11 @@ public:
 
   // DISPATCH:
   static void Dispatch(Core::ActionContextHandle context,
-    const std::string& file_path,
-    const bool& pixel_units)
+    const std::string& file_path)
   {
-    auto action = new ActionImportPoints(file_path, pixel_units);
-    Core::ActionDispatcher::PostAction(Core::ActionHandle(action), context);
+    auto action = Core::ActionHandle(new ActionImportPoints(file_path));
+
+    Core::ActionDispatcher::PostAction(action, context);
   }
 };
 

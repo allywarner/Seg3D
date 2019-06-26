@@ -47,6 +47,7 @@
 #include <Application/ViewerManager/Actions/ActionPickPoint.h>
 #include <Application/LayerIO/Actions/ActionExportPoints.h>
 #include <Application/ProjectManager/ProjectManager.h>
+#include <Application/LayerIO/Actions/ActionImportPoints.h>
 
 // Core Includes
 #include <Core/State/Actions/ActionSetAt.h>
@@ -153,8 +154,8 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   {
     CORE_LOG_ERROR("Hi!");
     //Dispatch call to action code
-    //ActionImportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
-      //filename[0].toStdString(), pixel_units);
+    ActionImportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
+      filename[0].toStdString());
   }
 }
 
