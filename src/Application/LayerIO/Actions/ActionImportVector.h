@@ -32,6 +32,7 @@
 // Core includes
 #include <Core/Action/Actions.h>
 #include <Core/Interface/Interface.h>
+#include <Core/Utils/Exception.h>
 
 #include <Core/Geometry/Point.h>
 
@@ -40,15 +41,14 @@
 namespace Seg3D
 {
 
-template <class T, class ReaderT>
+template <class T>
 class ActionImportVector : public Core::Action
 {
 public:
   using Vector = std::vector<T>;
 
-  ActionImportVector(const std::string& file_path, ReaderT reader) :
-    file_path_(file_path),
-    reader_(reader)
+  ActionImportVector(const std::string& file_path) :
+    file_path_(file_path)
   {
   }
 
@@ -73,6 +73,28 @@ public:
     return true; // validated
   }
 
+  static std::vector<T> read_file(std::string& filename)
+  {
+    std::vector<T> import_vector;
+    std::ifstream input_file;
+    input_file.open(filename);
+    if (input_file)
+    {
+      //what precision? give variable
+      input_file.precision(10);
+      std::copy(std::istream_iterator<T>(input_file),
+        std::istream_iterator<T>(),
+        std::back_inserter(import_vector));
+    }
+    else
+    {
+      CORE_THROW_RUNTIMEERROR("Invalid filepath.");
+    }
+ 
+
+    return import_vector;
+  }
+
   // RUN:
   // Each action needs to have this piece implemented. It spells out how the
   // action is run. It returns whether the action was successful or not.
@@ -81,29 +103,19 @@ public:
     std::string message("Importing vector...");
     Core::ActionProgressHandle progress(new Core::ActionProgress(message));
     progress->begin_progress_reporting();
-
-    boost::filesystem::path filename = boost::filesystem::path(this->file_path_);
-    std::vector<T> import_vector;
-    std::ifstream input_file;
-
+   
     try
     {
-      input_file.open(filename.string());
-      //what precision? give variable
-      input_file.precision(10);
-      std::copy(std::istream_iterator<T>(input_file),
-        std::istream_iterator<T>(),
-        std::back_inserter(import_vector));
+      auto import_vector = read_file(this->file_path_);
 
       result.reset(new Core::ActionResult(import_vector));
 
     }
     catch (...)
     {
-      context->report_error("Could not open and read from file: " + filename.string());
+      context->report_error("Could not open and read from file: " + this->file_path_);
       return false;
     }
-    input_file.close();
 
     progress->end_progress_reporting();
 
@@ -122,7 +134,6 @@ protected:
 private:
   // Where the layer should be imported from
   std::string file_path_;
-  ReaderT reader_;
 };
 
 } // end namespace Seg3D

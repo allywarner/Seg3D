@@ -51,8 +51,7 @@ class ActionImportPointsTests : public Test
 protected:
   virtual void SetUp()
   {
-    boost::filesystem::path path = testInputDir();
-    path = "points.txt";
+    auto path = testInputDir() / "test" / "import_points" / "import_points_test.txt";
     file_path = path.string();
     points.clear();
     context.reset( new ActionContext() );
@@ -101,39 +100,28 @@ TEST(PointReadTest, simple_file)
 
 }
 
-
 TEST_F(ActionImportPointsTests, EmptyAction)
 {
   // factory instantiation
   ActionImportPoints action;
 }
 
-#if(0)
 TEST_F(ActionImportPointsTests, ValidateEmptyParams)
 {
-  ActionExportPoints action;
+  ActionImportPoints action;
   ASSERT_FALSE( action.validate(context) );
 }
 
-TEST_F(ActionExportPointsTests, ValidateEmptyFilePath)
+TEST_F(ActionImportPointsTests, ValidateEmptyFilePath)
 {
-  ActionExportPoints action;
-  SinglePointVector();
-  action.set_vector( points );
+  ActionImportPoints action;
+  action.set_file_path( "" );
   ASSERT_FALSE( action.validate(context) );
 }
 
-TEST_F(ActionExportPointsTests, ValidateEmptyPoints)
+TEST_F(ActionImportPointsTests, RunInvalidPath)
 {
-  ActionExportPoints action;
-  action.set_file_path( dummy_path );
-  ASSERT_FALSE( action.validate(context) );
-}
-
-TEST_F(ActionExportPointsTests, RunInvalidPath)
-{
-  SinglePointVector();
-  ActionExportPoints action( dummy_path, points );
+  ActionImportPoints action( " " );
   ASSERT_TRUE( action.validate(context) );
   ASSERT_FALSE( action.run( context, result ) );
 }
@@ -141,18 +129,18 @@ TEST_F(ActionExportPointsTests, RunInvalidPath)
 
 TEST_F(ActionImportPointsTests, RunValidPath)
 {
-  SinglePointVector();
-  ActionImportPoints action( file_path );
+  auto path = testInputDir()/"test"/"import_points"/"import_points_test.txt";
+
+  ActionImportPoints action( path.string() );
   ASSERT_TRUE( action.validate(context) );
   ASSERT_TRUE( action.run( context, result ) );
 
-  std::ifstream inputfile;
-  inputfile.open(file_path.c_str() );
-  double x = -1.0, y = -1.0, z = -1.0;
-  inputfile >> x >> y >> z;
-  ASSERT_DOUBLE_EQ(x, 0);
-  ASSERT_DOUBLE_EQ(y, 0);
-  ASSERT_DOUBLE_EQ(z, 0);
-}
-#endif 
-
+  //TODO: Get value out of the action and compare to 'expected'
+  //std::ifstream inputfile;
+  //inputfile.open(file_path.c_str() );
+  //double x = -1.0, y = -1.0, z = -1.0;
+  //inputfile >> x >> y >> z;
+  //ASSERT_DOUBLE_EQ(x, 0);
+  //ASSERT_DOUBLE_EQ(y, 0);
+  //ASSERT_DOUBLE_EQ(z, 0);
+} 

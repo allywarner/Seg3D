@@ -29,6 +29,7 @@
 // Core includes
 #include <Core/Interface/Interface.h>
 #include <Core/Utils/Log.h>
+#include <Core/Utils/Exception.h>
 
 // Qt includes
 #include <QFileDialog>
@@ -58,53 +59,6 @@ SCI_REGISTER_TOOLINTERFACE( Seg3D, PointsSelectToolInterface )
 namespace Seg3D
 {
 
-//Custom file dialog for units check
-class MyFileDialog : public QFileDialog
-{
-public:
-  MyFileDialog(QWidget *, const QString& a,
-    const QString& b, const QString& c);
-  bool unitsCheck();
-  QSize sizeHint() const;
-private:
-  QCheckBox * units_checkbox_;
-};
-
-bool MyFileDialog::unitsCheck()
-{
-  return this->units_checkbox_->isChecked();
-}
-
-MyFileDialog::MyFileDialog(QWidget *parent, const QString& a,
-  const QString& b, const QString& c) :
-  QFileDialog(parent, a, b, c),
-  units_checkbox_(nullptr)
-{
-  setOption(QFileDialog::DontUseNativeDialog, true);
-  setFileMode(QFileDialog::ExistingFiles);
-  QGridLayout* mainLayout = dynamic_cast<QGridLayout*>(layout());
-
-  QHBoxLayout *hbl = new QHBoxLayout();
-
-  // add some widgets
-  units_checkbox_ = new QCheckBox("Points are in pixel units", this);
-  units_checkbox_->setChecked(false);
-  hbl->addWidget(units_checkbox_);
-  hbl->addItem(new QSpacerItem(30, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-
-  int numRows = mainLayout->rowCount();
-
-  // add the new layout to the bottom of mainLayout
-  // and span all columns
-  mainLayout->addLayout(hbl, numRows, 0, 1, -1);
-}
-
-QSize MyFileDialog::sizeHint() const
-{
-  return QSize(800, 600);
-}
-//End of custom dialog
-
 class PointsSelectToolInterfacePrivate
 {
 public:
@@ -122,40 +76,28 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
   PointsSelectTool* tool = dynamic_cast<PointsSelectTool*> (this->interface_->tool().get());
 
   //change to only allow for one file at a time
-  QStringList filename;
+  QString filename;
   boost::filesystem::path current_folder = ProjectManager::Instance()->get_current_file_folder();
-  std::string file_type = Core::StringToUpper("Text File") + "(*.txt)";
+  std::string file_type = "Text File (*.txt)";
 
-  MyFileDialog dialog(this->interface_, "Select Points File...",
-                                         current_folder.string().c_str(),
-                                         QString::fromStdString( file_type ) );
-  if (dialog.exec())
-  {
-    filename = dialog.selectedFiles();
-  }
-
-  bool pixel_units = dialog.unitsCheck();
-
-  //figure out where this goes. Needs to be on application thread.
-  /*if (pixel_units)
-  {
-    tool->use_world_units_state_->set(false);
-  }
-  else
-  {
-    tool->use_world_units_state_->set(true);
-  }*/
-
+  filename = QFileDialog::getOpenFileName(this->interface_, "Select Points File...",
+                                          current_folder.string().c_str(),
+                                          QString::fromStdString(file_type));
   if (filename.isEmpty())
   {
-    CORE_LOG_ERROR("File not selected");
+    CORE_LOG_ERROR("File not selected...");
   }
   else 
   {
-    CORE_LOG_ERROR("Hi!");
-    //Dispatch call to action code
-    ActionImportPoints::Dispatch(Core::Interface::GetWidgetActionContext(),
-      filename[0].toStdString());
+    try 
+    {
+      auto import_vector = ActionImportVector<Core::Point>::read_file(filename.toStdString());
+      CORE_LOG_SUCCESS("Successfully loaded points...");
+    }
+    catch(Core::RunTimeError&)
+    {
+      CORE_LOG_ERROR("Invalid filepath.");
+    }
   }
 }
 

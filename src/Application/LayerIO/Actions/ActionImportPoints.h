@@ -44,7 +44,7 @@ struct PointReader
 };
 
 
-class ActionImportPoints : public ActionImportVector<Core::Point, PointReader>
+class ActionImportPoints : public ActionImportVector<Core::Point>
 {
   CORE_ACTION(
     CORE_ACTION_TYPE("ImportPoints", "This action imports a list of points (x y z) to Seg3D.")
@@ -54,9 +54,9 @@ class ActionImportPoints : public ActionImportVector<Core::Point, PointReader>
 
 
 public:
-  using Base = ActionImportVector<Core::Point, PointReader>;
+  using Base = ActionImportVector<Core::Point>;
   ActionImportPoints(const std::string& file_path) :
-    Base(file_path, PointReader())
+    Base(file_path)
   {
     init_parameters();
   }
