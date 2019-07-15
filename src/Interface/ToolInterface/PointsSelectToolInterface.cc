@@ -98,6 +98,12 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
     {
       CORE_LOG_ERROR("Invalid filepath.");
     }
+
+    for (int i = 0; i < import_vector.size(); i++)
+    {
+
+    }
+
   }
 }
 
@@ -169,6 +175,7 @@ PointsSelectToolInterface::build_widget( QFrame* frame )
 
   qpointer_type points_select_interface( this );
 
+
   tool->seed_points_state_->value_changed_signal_.connect(
     boost::bind( &PointsSelectToolInterface::UpdateTable, points_select_interface ) );
   tool->seed_points_index_state_->value_changed_signal_.connect(
@@ -190,8 +197,8 @@ PointsSelectToolInterface::build_widget( QFrame* frame )
   QtUtils::QtBridge::Connect( this->private_->ui_.export_button_, boost::bind(
     &PointsSelectToolInterfacePrivate::export_points_to_file, this->private_ ) );
 
-  QtUtils::QtBridge::Connect(this->private_->ui_.import_button_, boost::bind(
-    &PointsSelectToolInterfacePrivate::import_points_from_file, this->private_));
+  QtUtils::QtBridge::Connect( this->private_->ui_.import_button_, boost::bind(
+    &PointsSelectToolInterfacePrivate::import_points_from_file, this->private_ ) );
 
   QtUtils::QtBridge::Connect( units_button_group, tool->units_selection_state_ );
 
