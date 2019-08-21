@@ -52,7 +52,6 @@ class ActionImportPoints : public ActionImportVector<Core::Point>
     CORE_ACTION_CHANGES_PROJECT_DATA()
     )
 
-
 public:
   using Base = ActionImportVector<Core::Point>;
   ActionImportPoints(const std::string& file_path) :

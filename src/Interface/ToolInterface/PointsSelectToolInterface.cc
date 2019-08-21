@@ -99,10 +99,10 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
       CORE_LOG_ERROR("Invalid filepath.");
     }
 
-    for (int i = 0; i < import_vector.size(); i++)
-    {
+    //for (int i = 0; i < import_vector.size(); i++)
+    //{
 
-    }
+    //}
 
   }
 }
