@@ -44,16 +44,12 @@ namespace Seg3D
 template <class T>
 class ActionImportVector : public Core::Action
 {
-
-	CORE_ACTION_OPTIONAL_ARGUMENT("import_vector_state", "", "The statid of the state variable into which the imported points will be written.")
-
 public:
   using Vector = std::vector<T>;
 
   ActionImportVector(const std::string& file_path) :
     file_path_(file_path)
   {
-	this->add_parameter(this->import_vector_state_id_);
   }
 
   ActionImportVector()
