@@ -33,6 +33,7 @@
 #include <Core/Action/Actions.h>
 #include <Core/Interface/Interface.h>
 #include <Core/Utils/Exception.h>
+#include <Core/State/StateVectorHelper.h>
 
 #include <Core/Geometry/Point.h>
 
@@ -107,8 +108,6 @@ public:
     try
     {
       auto import_vector = read_file(this->file_path_);
-
-      result.reset(new Core::ActionResult(import_vector));
 
     }
     catch (...)

@@ -30,6 +30,7 @@
 #include <Core/Interface/Interface.h>
 #include <Core/Utils/Log.h>
 #include <Core/Utils/Exception.h>
+#include <Core/State/Actions/ActionAdd.h>
 
 // Qt includes
 #include <QFileDialog>
@@ -93,17 +94,17 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
     {
       auto import_vector = ActionImportVector<Core::Point>::read_file(filename.toStdString());
       CORE_LOG_SUCCESS("Successfully loaded points...");
+
+      for (int i = 0; i < import_vector.size(); i++)
+      {
+        Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
+          tool->seed_points_index_state_, import_vector[i]);
+      }
     }
     catch(Core::RunTimeError&)
     {
       CORE_LOG_ERROR("Invalid filepath.");
     }
-
-    for (int i = 0; i < import_vector.size(); i++)
-    {
-
-    }
-
   }
 }
 
@@ -264,6 +265,7 @@ PointsSelectToolInterface::UpdateTable( qpointer_type points_select_interface )
       }
     }
     QTableWidget* table = points_select_interface->private_->ui_.points_table_;
+    //change this clear call 
     table->clearContents();
     table->setRowCount( seed_points.size() );
     for (size_t i = 0; i < seed_points.size(); ++i)

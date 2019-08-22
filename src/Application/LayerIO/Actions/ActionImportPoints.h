@@ -56,7 +56,8 @@ class ActionImportPoints : public ActionImportVector<Core::Point>
 public:
   using Base = ActionImportVector<Core::Point>;
   ActionImportPoints(const std::string& file_path) :
-    Base(file_path)
+    Base(
+    )
   {
     init_parameters();
   }
