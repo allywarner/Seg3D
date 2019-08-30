@@ -337,7 +337,7 @@ public:
 
     if ( this->signals_enabled() )
     {
-      this->value_changed_signal_( this->values_vector_, source );
+       this->value_changed_signal_( this->values_vector_, source );
       this->state_changed_signal_();
     }
 

@@ -94,21 +94,26 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
     {
       auto import_vector = ActionImportVector<Core::Point>::read_file(filename.toStdString());
       
-	  //check for pixel units and add Action add with seed points state (how to access?)
-	  if (tool->use_world_units_state_->get())
-	  {
-	    CORE_LOG_SUCCESS("Successfully loaded world points...");
-	  }
-	  else
-	  {
-		for (int i = 0; i < import_vector.size(); i++)
-		{
-		  Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
-		    tool->seed_points_index_state_, import_vector[i]);
+	    if (tool->use_world_units_state_->get())
+	    {
+        for (int i = 0; i < import_vector.size(); i++)
+        {
+          Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
+            tool->seed_points_state_, import_vector[i]);
 
-		  CORE_LOG_SUCCESS("Successfully loaded pixel points...");
-		}
-	  }
+          CORE_LOG_SUCCESS("Successfully loaded world points...");
+        }
+	    }
+	    else
+	    {
+		    for (int i = 0; i < import_vector.size(); i++)
+		    {
+		      Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
+		        tool->seed_points_index_state_, import_vector[i]);
+
+		      CORE_LOG_SUCCESS("Successfully loaded pixel points...");
+		    }
+	    }
     }
     catch(Core::RunTimeError&)
     {
