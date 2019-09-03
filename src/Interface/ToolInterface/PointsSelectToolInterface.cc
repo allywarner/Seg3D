@@ -108,8 +108,10 @@ void PointsSelectToolInterfacePrivate::import_points_from_file() const
 	    {
 		    for (int i = 0; i < import_vector.size(); i++)
 		    {
-		      Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
-		        tool->seed_points_index_state_, import_vector[i]);
+          PointsSelectTool::import_points(import_vector[i]);
+
+		      //Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
+		        //tool->seed_points_index_state_, import_vector[i]);
 
 		      CORE_LOG_SUCCESS("Successfully loaded pixel points...");
 		    }

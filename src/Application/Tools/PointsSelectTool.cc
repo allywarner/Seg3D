@@ -189,6 +189,14 @@ PointsSelectTool::handle_mouse_press( ViewerHandle viewer,
   return SeedPointsTool::handle_mouse_press( viewer, mouse_history, button, buttons, modifiers );
 }
 
+void PointsSelectTool::import_points(Core::Point pos)
+{
+  Core::StateEngine::lock_type state_lock(Core::StateEngine::GetMutex());
+
+  Core::ActionAdd::Dispatch(Core::Interface::GetWidgetActionContext(),
+    this->private_->tool_->seed_points_state_, pos);
+}
+
 void
 PointsSelectTool::handle_seed_points_changed()
 {
