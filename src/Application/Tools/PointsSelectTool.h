@@ -72,8 +72,6 @@ public:
   /// Locks: StateEngine and RenderResources (not at same time)
   virtual void redraw( size_t viewer_id, const Core::Matrix& proj_mat,
                        int viewer_width, int viewer_height );
-
-  static void import_points(Core::Point pos);
   
   // -- signals --
 public:
