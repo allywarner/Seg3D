@@ -265,9 +265,9 @@ PointsSelectToolInterface::UpdateTable( qpointer_type points_select_interface )
 
   if ( points_select_interface.data() )
   {
-    PointsSelectTool* tool = dynamic_cast< PointsSelectTool* >( points_select_interface->tool().get() );
-    std::vector< Core::Point > seed_points;
-    {
+    auto tool = dynamic_cast<SeedPointsTool* >( points_select_interface->tool().get() );
+    auto seed_points = tool->pointVectorToUpdate()->get();
+    /*{
       Core::StateEngine::lock_type lock( Core::StateEngine::GetMutex() );
       if ( tool->use_world_units_state_->get() )
       {
@@ -277,7 +277,7 @@ PointsSelectToolInterface::UpdateTable( qpointer_type points_select_interface )
       {
         seed_points = tool->seed_points_index_state_->get();
       }
-    }
+    }*/
     QTableWidget* table = points_select_interface->private_->ui_.points_table_;
     //change this clear call 
     table->clearContents();

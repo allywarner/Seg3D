@@ -96,9 +96,11 @@ public:
   /// NOTE: the indices returned can be out of the slice boundary.
   void world_to_index( double i_pos, double j_pos, int& i, int& j ) const;
 
+  //TODO: WorldXY toWorld(const ViewerIndexCoordinatesScreenPlane___NeedAGoodName&);
   void index_to_world( int i, int j, double& world_i, double& world_j ) const;
 
   /// Get the 3D world coordinate of the point
+  //TODO: Point to3DWorld(WorldXY)
   void get_world_coord( double i_pos, double j_pos, Point& world_coord ) const;
 
   /// Project a point in 3D space onto the plane of the slice.

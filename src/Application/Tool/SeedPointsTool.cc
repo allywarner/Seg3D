@@ -131,7 +131,8 @@ bool SeedPointsTool::handle_mouse_press( ViewerHandle viewer,
       Core::Point pos;
       target_slice->get_world_coord( world_x, world_y, pos );
       Core::ActionAdd::Dispatch( Core::Interface::GetMouseActionContext(),
-        this->seed_points_state_, pos );
+        pointVectorToUpdate(),
+        convertPointForSaving(pos, target_slice) );
 
       return true;
     }
@@ -193,7 +194,7 @@ void SeedPointsTool::redraw( size_t viewer_id, const Core::Matrix& proj_mat,
   std::vector< Core::Point > seed_points;
   {
     Core::StateEngine::lock_type lock( Core::StateEngine::GetMutex() );
-    seed_points = this->seed_points_state_->get();
+    seed_points = this->pointVectorToUpdate()->get();
   }
 
   size_t num_of_pts = seed_points.size();

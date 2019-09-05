@@ -49,13 +49,25 @@ public:
 public:
   /// HANDLE_MOUSE_PRESS:
   /// Called when a mouse button has been pressed.
-  virtual bool handle_mouse_press( ViewerHandle viewer, 
+  virtual bool handle_mouse_press( ViewerHandle viewer,
+    //TODO: extract parameter object, MouseState or something
     const Core::MouseHistory& mouse_history, 
     int button, int buttons, int modifiers );
+
+  virtual Core::StatePointVectorHandle pointVectorToUpdate() 
+  {
+    return seed_points_state_;
+  }
+
+  virtual Core::Point convertPointForSaving(const Core::Point& p, Core::VolumeSliceHandle) const
+  {
+    return p;
+  }
 
   /// HANDLE_MOUSE_MOVE:
   /// Called when the mouse moves in a viewer.
   virtual bool handle_mouse_move( ViewerHandle viewer, 
+    //TODO: extract parameter object, MouseState or something
     const Core::MouseHistory& mouse_history, 
     int button, int buttons, int modifiers );
 
@@ -91,6 +103,7 @@ public:
 
   /// FIND_POINT:
   /// Find seed point in viewer and return coordinates.
+  // TODO: introduce new types for WorldXY, WindowXY = MousePosition, , 
   bool find_point( ViewerHandle viewer, double world_x, double world_y,
                    Core::VolumeSliceHandle vol_slice, Core::Point& pt );
 

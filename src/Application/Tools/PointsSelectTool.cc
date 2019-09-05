@@ -62,10 +62,39 @@ public:
   ViewerHandle viewer_;
 };
 
+Core::StatePointVectorHandle PointsSelectTool::pointVectorToUpdate()
+{
+  Core::StateEngine::lock_type stateLock(Core::StateEngine::GetMutex());
+  if (!use_world_units_state_->get())
+    return seed_points_index_state_;
+  return SeedPointsTool::pointVectorToUpdate();
+}
+
+Core::Point PointsSelectTool::convertPointForSaving(const Core::Point& p, Core::VolumeSliceHandle active_slice) const
+{
+  Core::StateEngine::lock_type stateLock(Core::StateEngine::GetMutex());
+  if (!use_world_units_state_->get())
+  {
+    Core::Transform inverse_transform = active_slice->get_volume()->get_inverse_transform();
+
+    // seed points are in world coordinates by default
+
+    Core::Point indexPoint = inverse_transform * p;
+    indexPoint[0] = Core::Round(indexPoint.x());
+    indexPoint[1] = Core::Round(indexPoint.y());
+    indexPoint[2] = Core::Round(indexPoint.z());
+    return indexPoint;
+  }
+
+  return p;
+}
+
 // Generate seed points in index coordinates
 void
 PointsSelectToolPrivate::update_unit_point_list()
 {
+  return;
+
   lock_type lock( this->get_mutex() );
 
   if ( ! this->viewer_ )
@@ -91,8 +120,6 @@ PointsSelectToolPrivate::update_unit_point_list()
   // seed points are in world coordinates by default
   if ( convert_units && active_slice )
   {
-    std::string view_mode = this->viewer_->view_mode_state_->get();
-
     this->tool_->seed_points_index_state_->clear();
 
     for ( auto &point : this->tool_->seed_points_state_->get() )

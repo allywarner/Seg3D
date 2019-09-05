@@ -60,18 +60,22 @@ public:
   /// Called when a mouse button has been pressed.
   virtual bool handle_mouse_press( ViewerHandle viewer, 
                                    const Core::MouseHistory& mouse_history, 
-                                   int button, int buttons, int modifiers );
+                                   int button, int buttons, int modifiers ) override;
+
+  Core::StatePointVectorHandle pointVectorToUpdate() override;
+
+  Core::Point convertPointForSaving(const Core::Point& p, Core::VolumeSliceHandle active_slice) const override;
 
   /// HANDLE_SEED_POINTS_CHANGED:
   /// Called when the seed points have changed.
-  virtual void handle_seed_points_changed();
+  virtual void handle_seed_points_changed() override;
   
   /// REDRAW:
   /// Draw seed points in the specified viewer.
   /// The function should only be called by the renderer, which has a valid GL context.
   /// Locks: StateEngine and RenderResources (not at same time)
   virtual void redraw( size_t viewer_id, const Core::Matrix& proj_mat,
-                       int viewer_width, int viewer_height );
+                       int viewer_width, int viewer_height ) override;
   
   // -- signals --
 public:
